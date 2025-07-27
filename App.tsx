@@ -14,12 +14,26 @@ import MapView from './components/MapView';
 import LocationService from './services/LocationService';
 import PubService from './services/PubService';
 
-const App = () => {
-  const [location, setLocation] = useState(null);
-  const [pubs, setPubs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [status, setStatus] = useState('Initializing...');
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+interface Pub {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  type: string;
+}
+
+const App: React.FC = () => {
+  const [location, setLocation] = useState<Location | null>(null);
+  const [pubs, setPubs] = useState<Pub[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>('Initializing...');
 
   useEffect(() => {
     initializeApp();
@@ -29,7 +43,7 @@ const App = () => {
     };
   }, []);
 
-  const initializeApp = async () => {
+  const initializeApp = async (): Promise<void> => {
     try {
       setStatus('Getting your location...');
       setLoading(true);
@@ -56,20 +70,20 @@ const App = () => {
       setLoading(false);
 
       // Start watching location for updates
-      LocationService.watchLocation((newLocation) => {
+      LocationService.watchLocation((newLocation: Location) => {
         setLocation(newLocation);
         // Optionally refresh pubs when location changes significantly
       });
 
     } catch (err) {
       console.error('App initialization error:', err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Unknown error occurred');
       setLoading(false);
       setStatus('Error occurred');
     }
   };
 
-  const handlePubSelect = (pub) => {
+  const handlePubSelect = (pub: Pub): void => {
     Alert.alert(
       pub.name,
       `Address: ${pub.address}\nType: ${pub.type}`,

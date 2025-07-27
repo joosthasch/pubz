@@ -1,9 +1,23 @@
 import axios from 'axios';
 
+interface Pub {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  type: string;
+  tags?: any;
+}
+
+interface CacheEntry {
+  data: Pub[];
+  timestamp: number;
+}
+
 // Mock data for fallback when API fails
-const MOCK_PUBS = [
+const MOCK_PUBS: Omit<Pub, 'id'>[] = [
   {
-    id: 'mock-1',
     name: 'The Red Lion',
     latitude: 51.5074,
     longitude: -0.1278,
@@ -11,7 +25,6 @@ const MOCK_PUBS = [
     type: 'pub',
   },
   {
-    id: 'mock-2',
     name: 'The Crown & Anchor',
     latitude: 51.5080,
     longitude: -0.1270,
@@ -19,7 +32,6 @@ const MOCK_PUBS = [
     type: 'pub',
   },
   {
-    id: 'mock-3',
     name: 'The George Inn',
     latitude: 51.5068,
     longitude: -0.1285,
@@ -29,18 +41,16 @@ const MOCK_PUBS = [
 ];
 
 class PubService {
-  constructor() {
-    this.cache = new Map();
-    this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
-  }
+  private cache = new Map<string, CacheEntry>();
+  private cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
-  async findNearbyPubs(latitude, longitude, radiusKm = 1) {
+  async findNearbyPubs(latitude: number, longitude: number, radiusKm: number = 1): Promise<Pub[]> {
     try {
       const cacheKey = `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
       
       // Check cache first
       if (this.cache.has(cacheKey)) {
-        const cached = this.cache.get(cacheKey);
+        const cached = this.cache.get(cacheKey)!;
         if (Date.now() - cached.timestamp < this.cacheTimeout) {
           return cached.data;
         }
@@ -64,7 +74,7 @@ class PubService {
     }
   }
 
-  async queryOverpassAPI(latitude, longitude, radiusKm) {
+  private async queryOverpassAPI(latitude: number, longitude: number, radiusKm: number): Promise<Pub[]> {
     const radiusMeters = radiusKm * 1000;
     
     // Overpass API query for pubs, bars, and breweries
@@ -97,13 +107,13 @@ class PubService {
     return this.parseOverpassResponse(response.data);
   }
 
-  parseOverpassResponse(data) {
+  private parseOverpassResponse(data: any): Pub[] {
     if (!data || !data.elements) {
       return [];
     }
 
     return data.elements
-      .map(element => {
+      .map((element: any): Pub | null => {
         const lat = element.lat || (element.center && element.center.lat);
         const lon = element.lon || (element.center && element.center.lon);
         
@@ -126,12 +136,12 @@ class PubService {
           tags,
         };
       })
-      .filter(pub => pub !== null)
+      .filter((pub: Pub | null): pub is Pub => pub !== null)
       .slice(0, 50); // Limit to 50 results
   }
 
-  formatAddress(tags) {
-    const parts = [];
+  private formatAddress(tags: any): string {
+    const parts: string[] = [];
     
     if (tags['addr:housenumber']) {
       parts.push(tags['addr:housenumber']);
@@ -149,7 +159,7 @@ class PubService {
     return parts.length > 0 ? parts.join(', ') : 'Address not available';
   }
 
-  getMockPubsNearLocation(latitude, longitude) {
+  private getMockPubsNearLocation(latitude: number, longitude: number): Pub[] {
     // Generate mock pubs around the given location
     return MOCK_PUBS.map((pub, index) => ({
       ...pub,
@@ -159,7 +169,7 @@ class PubService {
     }));
   }
 
-  clearCache() {
+  clearCache(): void {
     this.cache.clear();
   }
 }

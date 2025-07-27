@@ -1,8 +1,28 @@
 import React, { useRef, useEffect } from 'react';
 import { WebView } from 'react-native-webview';
 
-const MapView = ({ location, pubs, onPubSelect }) => {
-  const webViewRef = useRef(null);
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+interface Pub {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  address: string;
+  type: string;
+}
+
+interface MapViewProps {
+  location: Location | null;
+  pubs: Pub[];
+  onPubSelect?: (pub: Pub) => void;
+}
+
+const MapView: React.FC<MapViewProps> = ({ location, pubs, onPubSelect }) => {
+  const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
     if (location && webViewRef.current) {
@@ -16,7 +36,7 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     }
   }, [pubs]);
 
-  const updateMapLocation = (location) => {
+  const updateMapLocation = (location: Location): void => {
     const script = `
       if (window.map) {
         window.map.setView([${location.latitude}, ${location.longitude}], 15);
@@ -33,10 +53,10 @@ const MapView = ({ location, pubs, onPubSelect }) => {
         }).addTo(window.map);
       }
     `;
-    webViewRef.current.postMessage(script);
+    webViewRef.current?.injectJavaScript(script);
   };
 
-  const updatePubMarkers = (pubs) => {
+  const updatePubMarkers = (pubs: Pub[]): void => {
     const script = `
       if (window.map && window.pubMarkers) {
         // Clear existing pub markers
@@ -75,10 +95,10 @@ const MapView = ({ location, pubs, onPubSelect }) => {
         });
       }
     `;
-    webViewRef.current.postMessage(script);
+    webViewRef.current?.injectJavaScript(script);
   };
 
-  const handleMessage = (event) => {
+  const handleMessage = (event: any): void => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
       if (data.type === 'pubSelected' && onPubSelect) {
@@ -87,11 +107,6 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     } catch (error) {
       console.error('Error handling WebView message:', error);
     }
-  };
-
-  const handleWebViewMessage = (event) => {
-    const script = event.nativeEvent.data;
-    webViewRef.current.injectJavaScript(script);
   };
 
   const htmlContent = `
@@ -140,15 +155,6 @@ const MapView = ({ location, pubs, onPubSelect }) => {
             // Initialize markers arrays
             window.pubMarkers = [];
             window.userMarker = null;
-            
-            // Handle messages from React Native
-            window.addEventListener('message', function(event) {
-                try {
-                    eval(event.data);
-                } catch (error) {
-                    console.error('Error executing script:', error);
-                }
-            });
             
             // Disable context menu
             window.map.getContainer().addEventListener('contextmenu', function(e) {

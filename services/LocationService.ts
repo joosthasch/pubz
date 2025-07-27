@@ -1,19 +1,22 @@
 import Geolocation from 'react-native-geolocation-service';
 import { requestLocationPermission } from '../utils/permissions';
 
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
 // Default location (London) if location services fail
-const DEFAULT_LOCATION = {
+const DEFAULT_LOCATION: Location = {
   latitude: 51.5074,
   longitude: -0.1278,
 };
 
 class LocationService {
-  constructor() {
-    this.watchId = null;
-    this.currentLocation = null;
-  }
+  private watchId: number | null = null;
+  private currentLocation: Location | null = null;
 
-  async getCurrentLocation() {
+  async getCurrentLocation(): Promise<Location> {
     try {
       const hasPermission = await requestLocationPermission();
       
@@ -22,10 +25,10 @@ class LocationService {
         return DEFAULT_LOCATION;
       }
 
-      return new Promise((resolve, reject) => {
+      return new Promise<Location>((resolve, reject) => {
         Geolocation.getCurrentPosition(
           (position) => {
-            const location = {
+            const location: Location = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
@@ -50,7 +53,7 @@ class LocationService {
     }
   }
 
-  watchLocation(callback) {
+  async watchLocation(callback: (location: Location) => void): Promise<number | null> {
     return new Promise(async (resolve) => {
       try {
         const hasPermission = await requestLocationPermission();
@@ -63,7 +66,7 @@ class LocationService {
 
         this.watchId = Geolocation.watchPosition(
           (position) => {
-            const location = {
+            const location: Location = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
@@ -91,14 +94,14 @@ class LocationService {
     });
   }
 
-  clearWatch() {
+  clearWatch(): void {
     if (this.watchId !== null) {
       Geolocation.clearWatch(this.watchId);
       this.watchId = null;
     }
   }
 
-  getLastKnownLocation() {
+  getLastKnownLocation(): Location {
     return this.currentLocation || DEFAULT_LOCATION;
   }
 }

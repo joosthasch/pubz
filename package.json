@@ -1,16 +1,13 @@
 {
   "name": "pubz",
-  "version": "1.0.0",
-  "description": "React Native pub finder application",
-  "main": "index.js",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint .",
-    "build:android": "cd android && ./gradlew assembleRelease",
-    "build:ios": "cd ios && xcodebuild -workspace pubz.xcworkspace -scheme pubz -configuration Release -sdk iphoneos -archivePath pubz.xcarchive archive"
+    "lint": "eslint ."
   },
   "dependencies": {
     "react": "18.2.0",
@@ -34,7 +31,8 @@
     "jest": "^29.2.1",
     "metro-react-native-babel-preset": "0.76.8",
     "prettier": "^2.4.1",
-    "react-test-renderer": "18.2.0"
+    "react-test-renderer": "18.2.0",
+    "typescript": "4.8.4"
   },
   "jest": {
     "preset": "react-native"

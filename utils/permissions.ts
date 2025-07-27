@@ -5,14 +5,15 @@ import {
   request,
   check,
   openSettings,
+  Permission,
 } from 'react-native-permissions';
 
-const LOCATION_PERMISSIONS = {
+const LOCATION_PERMISSIONS: Record<string, Permission> = {
   ios: PERMISSIONS.IOS.LOCATION_WHEN_IN_USE,
   android: PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
 };
 
-export const requestLocationPermission = async () => {
+export const requestLocationPermission = async (): Promise<boolean> => {
   try {
     const permission = LOCATION_PERMISSIONS[Platform.OS];
     
@@ -50,7 +51,7 @@ export const requestLocationPermission = async () => {
   }
 };
 
-export const checkLocationPermission = async () => {
+export const checkLocationPermission = async (): Promise<boolean> => {
   try {
     const permission = LOCATION_PERMISSIONS[Platform.OS];
     
