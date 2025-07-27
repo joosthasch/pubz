@@ -1,4 +1,4 @@
-import {Platform, Alert} from 'react-native';
+import { Platform, Alert } from 'react-native';
 import {
   PERMISSIONS,
   RESULTS,
@@ -15,22 +15,22 @@ const LOCATION_PERMISSIONS = {
 export const requestLocationPermission = async () => {
   try {
     const permission = LOCATION_PERMISSIONS[Platform.OS];
-    
+
     if (!permission) {
       throw new Error('Platform not supported');
     }
 
     const result = await check(permission);
-    
+
     if (result === RESULTS.GRANTED) {
       return true;
     }
-    
+
     if (result === RESULTS.DENIED) {
       const requestResult = await request(permission);
       return requestResult === RESULTS.GRANTED;
     }
-    
+
     if (result === RESULTS.BLOCKED) {
       Alert.alert(
         'Location Permission Required',
@@ -42,7 +42,7 @@ export const requestLocationPermission = async () => {
       );
       return false;
     }
-    
+
     return false;
   } catch (error) {
     console.error('Error requesting location permission:', error);
@@ -53,7 +53,7 @@ export const requestLocationPermission = async () => {
 export const checkLocationPermission = async () => {
   try {
     const permission = LOCATION_PERMISSIONS[Platform.OS];
-    
+
     if (!permission) {
       return false;
     }

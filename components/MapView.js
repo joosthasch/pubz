@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { WebView } from 'react-native-webview';
+import { StyleSheet } from 'react-native';
 
 const MapView = ({ location, pubs, onPubSelect }) => {
   const webViewRef = useRef(null);
@@ -16,14 +17,14 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     }
   }, [pubs]);
 
-  const updateMapLocation = (location) => {
+  const updateMapLocation = (newLocation) => {
     const script = `
       if (window.map) {
-        window.map.setView([${location.latitude}, ${location.longitude}], 15);
+        window.map.setView([${newLocation.latitude}, ${newLocation.longitude}], 15);
         if (window.userMarker) {
           window.map.removeLayer(window.userMarker);
         }
-        window.userMarker = L.marker([${location.latitude}, ${location.longitude}], {
+        window.userMarker = L.marker([${newLocation.latitude}, ${newLocation.longitude}], {
           icon: L.divIcon({
             className: 'user-location-marker',
             html: '<div style="background: #4285f4; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);"></div>',
@@ -36,7 +37,7 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     webViewRef.current.postMessage(script);
   };
 
-  const updatePubMarkers = (pubs) => {
+  const updatePubMarkers = (pubData) => {
     const script = `
       if (window.map && window.pubMarkers) {
         // Clear existing pub markers
@@ -44,7 +45,7 @@ const MapView = ({ location, pubs, onPubSelect }) => {
         window.pubMarkers = [];
         
         // Add new pub markers
-        const pubs = ${JSON.stringify(pubs)};
+        const pubs = ${JSON.stringify(pubData)};
         pubs.forEach(pub => {
           const marker = L.marker([pub.latitude, pub.longitude], {
             icon: L.divIcon({
@@ -87,11 +88,6 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     } catch (error) {
       console.error('Error handling WebView message:', error);
     }
-  };
-
-  const handleWebViewMessage = (event) => {
-    const script = event.nativeEvent.data;
-    webViewRef.current.injectJavaScript(script);
   };
 
   const htmlContent = `
@@ -165,7 +161,7 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     <WebView
       ref={webViewRef}
       source={{ html: htmlContent }}
-      style={{ flex: 1 }}
+      style={styles.webView}
       javaScriptEnabled={true}
       domStorageEnabled={true}
       startInLoadingState={true}
@@ -182,5 +178,11 @@ const MapView = ({ location, pubs, onPubSelect }) => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  webView: {
+    flex: 1,
+  },
+});
 
 export default MapView;

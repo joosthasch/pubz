@@ -23,7 +23,7 @@ const App = () => {
 
   useEffect(() => {
     initializeApp();
-    
+
     return () => {
       LocationService.clearWatch();
     };
@@ -37,7 +37,7 @@ const App = () => {
 
       // Get current location
       const currentLocation = await LocationService.getCurrentLocation();
-      
+
       if (!currentLocation) {
         throw new Error('Unable to get location');
       }
@@ -60,7 +60,6 @@ const App = () => {
         setLocation(newLocation);
         // Optionally refresh pubs when location changes significantly
       });
-
     } catch (err) {
       console.error('App initialization error:', err);
       setError(err.message);
@@ -70,13 +69,9 @@ const App = () => {
   };
 
   const handlePubSelect = (pub) => {
-    Alert.alert(
-      pub.name,
-      `Address: ${pub.address}\nType: ${pub.type}`,
-      [
-        { text: 'OK', style: 'default' }
-      ]
-    );
+    Alert.alert(pub.name, `Address: ${pub.address}\nType: ${pub.type}`, [
+      { text: 'OK', style: 'default' },
+    ]);
   };
 
   const renderLoading = () => (
@@ -98,11 +93,7 @@ const App = () => {
 
   const renderMap = () => (
     <View style={styles.mapContainer}>
-      <MapView
-        location={location}
-        pubs={pubs}
-        onPubSelect={handlePubSelect}
-      />
+      <MapView location={location} pubs={pubs} onPubSelect={handlePubSelect} />
       <View style={styles.statusBar}>
         <Text style={styles.statusBarText}>
           📍 {pubs.length} pubs found nearby
@@ -117,7 +108,7 @@ const App = () => {
         barStyle={Platform.OS === 'ios' ? 'dark-content' : 'light-content'}
         backgroundColor="#007AFF"
       />
-      
+
       <View style={styles.header}>
         <Text style={styles.headerTitle}>🍺 PubZ</Text>
         <Text style={styles.headerSubtitle}>Find pubs near you</Text>

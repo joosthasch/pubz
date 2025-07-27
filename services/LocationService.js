@@ -16,7 +16,7 @@ class LocationService {
   async getCurrentLocation() {
     try {
       const hasPermission = await requestLocationPermission();
-      
+
       if (!hasPermission) {
         console.warn('Location permission denied, using default location');
         return DEFAULT_LOCATION;
@@ -54,7 +54,7 @@ class LocationService {
     return new Promise(async (resolve) => {
       try {
         const hasPermission = await requestLocationPermission();
-        
+
         if (!hasPermission) {
           callback(DEFAULT_LOCATION);
           resolve(null);
@@ -81,7 +81,7 @@ class LocationService {
             distanceFilter: 10,
           }
         );
-        
+
         resolve(this.watchId);
       } catch (error) {
         console.error('Error watching location:', error);

@@ -13,9 +13,9 @@ const MOCK_PUBS = [
   {
     id: 'mock-2',
     name: 'The Crown & Anchor',
-    latitude: 51.5080,
-    longitude: -0.1270,
-    address: '456 King\'s Road, London',
+    latitude: 51.508,
+    longitude: -0.127,
+    address: "456 King's Road, London",
     type: 'pub',
   },
   {
@@ -37,7 +37,7 @@ class PubService {
   async findNearbyPubs(latitude, longitude, radiusKm = 1) {
     try {
       const cacheKey = `${latitude.toFixed(4)},${longitude.toFixed(4)}`;
-      
+
       // Check cache first
       if (this.cache.has(cacheKey)) {
         const cached = this.cache.get(cacheKey);
@@ -47,7 +47,7 @@ class PubService {
       }
 
       const pubs = await this.queryOverpassAPI(latitude, longitude, radiusKm);
-      
+
       // Cache the results
       this.cache.set(cacheKey, {
         data: pubs,
@@ -57,7 +57,7 @@ class PubService {
       return pubs;
     } catch (error) {
       console.error('Error finding nearby pubs:', error);
-      
+
       // Return mock data as fallback
       console.warn('Using mock pub data as fallback');
       return this.getMockPubsNearLocation(latitude, longitude);
@@ -66,7 +66,7 @@ class PubService {
 
   async queryOverpassAPI(latitude, longitude, radiusKm) {
     const radiusMeters = radiusKm * 1000;
-    
+
     // Overpass API query for pubs, bars, and breweries
     const query = `
       [out:json][timeout:25];
@@ -103,10 +103,10 @@ class PubService {
     }
 
     return data.elements
-      .map(element => {
+      .map((element) => {
         const lat = element.lat || (element.center && element.center.lat);
         const lon = element.lon || (element.center && element.center.lon);
-        
+
         if (!lat || !lon) {
           return null;
         }
@@ -126,13 +126,13 @@ class PubService {
           tags,
         };
       })
-      .filter(pub => pub !== null)
+      .filter((pub) => pub !== null)
       .slice(0, 50); // Limit to 50 results
   }
 
   formatAddress(tags) {
     const parts = [];
-    
+
     if (tags['addr:housenumber']) {
       parts.push(tags['addr:housenumber']);
     }
