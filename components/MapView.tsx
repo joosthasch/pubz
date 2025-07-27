@@ -1,5 +1,5 @@
-import React, { useRef, useEffect } from 'react';
-import { WebView } from 'react-native-webview';
+import React, { useRef, useEffect } from "react";
+import { WebView } from "react-native-webview";
 
 interface Location {
   latitude: number;
@@ -101,11 +101,11 @@ const MapView: React.FC<MapViewProps> = ({ location, pubs, onPubSelect }) => {
   const handleMessage = (event: any): void => {
     try {
       const data = JSON.parse(event.nativeEvent.data);
-      if (data.type === 'pubSelected' && onPubSelect) {
+      if (data.type === "pubSelected" && onPubSelect) {
         onPubSelect(data.pub);
       }
     } catch (error) {
-      console.error('Error handling WebView message:', error);
+      console.error("Error handling WebView message:", error);
     }
   };
 
@@ -177,13 +177,13 @@ const MapView: React.FC<MapViewProps> = ({ location, pubs, onPubSelect }) => {
       startInLoadingState={true}
       onMessage={handleMessage}
       onLoadEnd={() => {
-        console.log('WebView loaded successfully');
+        console.log("WebView loaded successfully");
         if (location) {
           updateMapLocation(location);
         }
       }}
       onError={(error) => {
-        console.error('WebView error:', error);
+        console.error("WebView error:", error);
       }}
     />
   );
