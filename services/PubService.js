@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 export class PubService {
-  static readonly OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
-  static readonly SEARCH_RADIUS = 1000; // 1km in meters
+  static OVERPASS_API_URL = 'https://overpass-api.de/api/interpreter';
+  static SEARCH_RADIUS = 1000; // 1km in meters
 
   /**
    * Fetch pubs near the given coordinates using OpenStreetMap Overpass API
